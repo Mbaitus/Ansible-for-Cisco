@@ -1,0 +1,25 @@
+---
+- name: Configure VRF on Cisco ISR 1100
+  hosts: my_router
+  connection: network_cli
+  gather_facts: no
+
+  vars:
+    vrf_name: "my_vrf"
+    vrf_rd: "100:1"
+    vrf_description: "My VRF"
+
+  tasks:
+    - name: Create VRF
+      ios_command:
+        commands:
+          - "ip vrf {{ vrf_name }}"
+          - "rd {{ vrf_rd }}"
+          - "description {{ vrf_description }}"
+      register: output
+
+    - name: Save running configuration
+      ios_command:
+        commands:
+          - "write memory"
+      when: output is changed
