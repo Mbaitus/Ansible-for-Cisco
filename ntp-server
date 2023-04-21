@@ -1,0 +1,21 @@
+---
+- name: Configure NTP server on Cisco ISR 1100
+  hosts: my_router
+  connection: network_cli
+  gather_facts: no
+
+  vars:
+    ntp_server: "10.0.0.1"
+
+  tasks:
+    - name: Configure NTP server
+      ios_command:
+        commands:
+          - "ntp server {{ ntp_server }} prefer"
+      register: output
+
+    - name: Save running configuration
+      ios_command:
+        commands:
+          - "write memory"
+      when: output is changed
